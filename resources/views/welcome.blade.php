@@ -81,8 +81,21 @@
 
             <div class="content">
                 <div class="title m-b-md">
-                    Laravel
+                    <x-alert />
                 </div>
+
+                <x-danger>
+                    <strong>Whoops!</strong> Something went wrong!
+                </x-danger>
+
+                <x-title>
+                    <x-slot name="title">
+                        Server Error
+                    </x-slot>
+
+                    <strong>Whoops!</strong> Something went wrong!
+                </x-title>
+
 
                 <div class="links">
                     <a href="https://laravel.com/docs">Docs</a>
@@ -98,3 +111,4 @@
         </div>
     </body>
 </html>
+
