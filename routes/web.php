@@ -20,7 +20,7 @@ Route::get('/', function () {
 
 Route::group(['prefix' => 'blog'], function () {
     Route::get('', 'BlogController@index')->name('blog');
-    Route::get('/{id}', 'BlogController@show')->name('show');
+    Route::get('/{id}', 'BlogController@show')->name('blog.show');
     Route::get('/create', 'BlogController@create')->name('create');
     Route::post('/create', 'BlogController@store')->name('store');
     Route::get('/{id}/edit', 'BlogController@edit')->name('edit');

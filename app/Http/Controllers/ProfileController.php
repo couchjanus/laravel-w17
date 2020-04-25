@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Tag;
+use App\Profile;
 use Illuminate\Http\Request;
 
-class TagController extends Controller
+class ProfileController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,9 +14,7 @@ class TagController extends Controller
      */
     public function index()
     {
-        $tags = Tag::all();
-        $title = "Tags Management";
-        return view('admin.tags.index', compact('tags', 'title'));
+        //
     }
 
     /**
@@ -27,8 +24,7 @@ class TagController extends Controller
      */
     public function create()
     {
-        $title = "Add New Tag";
-        return view('admin.tags.create', compact('title'));
+        //
     }
 
     /**
@@ -39,17 +35,16 @@ class TagController extends Controller
      */
     public function store(Request $request)
     {
-        Tag::create($request->all());
-        return redirect(route('admin.tags.index'));
+        //
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Tag  $tag
+     * @param  \App\Profile  $profile
      * @return \Illuminate\Http\Response
      */
-    public function show(Tag $tag)
+    public function show(Profile $profile)
     {
         //
     }
@@ -57,10 +52,10 @@ class TagController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Tag  $tag
+     * @param  \App\Profile  $profile
      * @return \Illuminate\Http\Response
      */
-    public function edit(Tag $tag)
+    public function edit(Profile $profile)
     {
         //
     }
@@ -69,10 +64,10 @@ class TagController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Tag  $tag
+     * @param  \App\Profile  $profile
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Tag $tag)
+    public function update(Request $request, Profile $profile)
     {
         //
     }
@@ -80,10 +75,10 @@ class TagController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Tag  $tag
+     * @param  \App\Profile  $profile
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Tag $tag)
+    public function destroy(Profile $profile)
     {
         //
     }
