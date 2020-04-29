@@ -31,6 +31,7 @@
     @include('layouts.partials.admin._sidebar')
 
     <div class="content-wrapper" style="min-height: 917px;">
+      @include('layouts.partials.admin._flash-message')
       <!-- Main content -->
       <section class="content" style="padding-top: 20px">
         @yield('content')

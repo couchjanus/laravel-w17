@@ -65,6 +65,13 @@
                             </div>
                         </div>
                     </form>
+                    <hr>
+                    <div class="form-group row">
+                        <div class="col-md-12">
+                            <p class="text-center margin-bottom-3">Or Login with</p>
+                            @include('auth.partials._socials-icons')
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

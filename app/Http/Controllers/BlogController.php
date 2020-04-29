@@ -11,16 +11,9 @@ class BlogController extends Controller
     {
         $posts = Post::simplePaginate(5);
         $title = "Blog post list";
-        return view('blog.index',compact('posts', 'title'));
+        return view('blog.index', compact('posts', 'title'));
     }
-
-    // public function show($id)
-    // {
-    //     $title = "Blog post item";
-    //     $post = Post::where('id', $id)->first();
-    //     return view('blog.show',compact('post', 'title'));
-    // }
-
+ 
     public function show($slug)
     {
         if (is_numeric($slug)) {
@@ -31,7 +24,20 @@ class BlogController extends Controller
         }
         $title = "Blog post item";
         // Get post for slug.
-        $post = Post::whereSlug($slug)->firstOrFail();
+        $post = Post::whereSlug($slug)->with('user')->with('category')->firstOrFail();
+        
+        // $post->increment('votes');
+        // \Session::flush();
+
+        $Key = 'blog' . $post->id;
+        if (!\Session::has($Key)) {
+            // \DB::table('posts')
+            //   ->where('id', $post->id)
+            //   ->increment('votes', 1);
+            $post->increment('votes');
+            \Session::put($Key, 1);
+        }
+        
         return view('blog.show',compact('post'));
     }
 

@@ -15,7 +15,7 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::all();
+        $categories = Category::withCount(['posts'])->paginate(10);
         $title = "Categories Management";
         return view('admin.categories.index',compact('categories', 'title'));
     }
@@ -40,7 +40,7 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         Category::create($request->all());
-        return redirect(route('admin.categories.index'));
+        return redirect(route('admin.categories.index'))->withSuccess('Category Created Successfully');;
     }
 
     /**
@@ -75,7 +75,7 @@ class CategoryController extends Controller
     public function update(Request $request, Category $category)
     {
         $category->update($request->all());
-        return redirect()->route('admin.categories.index');
+        return redirect()->route('admin.categories.index')->withSuccess('Category Updated Successfully');
     }
 
     /**
@@ -87,7 +87,7 @@ class CategoryController extends Controller
     public function destroy(Category $category)
     {
         $category->delete();
-        return redirect()->route('admin.categories.index');
+        return redirect()->route('admin.categories.index')->withSuccess('Category Deleted Successfully');;
     }
 
     // trashed

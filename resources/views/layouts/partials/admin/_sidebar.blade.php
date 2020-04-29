@@ -33,6 +33,22 @@
                         </p>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="{{ route("admin.tags.index") }}" class="nav-link">
+                        <i class="fas fa-cogs"></i>
+                        <p>
+                            <span>Tags</span>
+                        </p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route("admin.posts.index") }}" class="nav-link">
+                        <i class="fas fa-cogs"></i>
+                        <p>
+                            <span>Posts</span>
+                        </p>
+                    </a>
+                </li>
             </ul>
         </nav>
         <!-- /.sidebar-menu -->

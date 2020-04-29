@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\User;
+use App\{User, Profile};
+use Illuminate\Support\Facades\Hash;
+use App\Enums\UserStatus;
 
 class UserController extends Controller
 {
@@ -15,7 +17,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::all();
+        $users = User::orderBy('id', 'desc')->paginate(10);
         $title = "Users Management";
         return view('admin.users.index', compact('users', 'title'));
     }
@@ -27,7 +29,9 @@ class UserController extends Controller
      */
     public function create()
     {
-        //
+        $title = 'Add User';
+        $status = UserStatus::toSelectArray();
+        return view('admin.users.create', compact('title', 'status'));
     }
 
     /**
@@ -38,7 +42,17 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $user = User::create([
+            'name' => $request['name'],
+            'email' => $request['email'],
+            'password' => Hash::make($request['password']),
+        ]);
+
+        $profile = new Profile();
+        $user->profile()->save($profile);
+
+        return redirect(route('admin.users.index'))->with('success', 'User Created Successfully!');
+
     }
 
     /**
@@ -49,7 +63,8 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        //
+        return view('admin.users.show')->withUser($user)->withTitle('Show User');
+
     }
 
     /**
@@ -60,7 +75,9 @@ class UserController extends Controller
      */
     public function edit($id)
     {
-        //
+        $status = UserStatus::toSelectArray();
+        return view('admin.users.edit')->withUser($user)->withTitle('Edit User')->withStatus($status);
+   
     }
 
     /**
@@ -72,7 +89,14 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $user->update($request->all());
+        
+        if (!$user->profile) {
+            $profile = new Profile();
+            $user->profile()->save($profile);
+        }
+        return redirect(route('admin.users.index'))->with('success', 'User Updated Successfully!');
+
     }
 
     /**
@@ -83,6 +107,47 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $user->delete();
+        return redirect()->route('admin.users.index');
     }
+
+    public function changeUserStatus(Request $request)
+    {
+        $user = User::find($request->user_id);
+        $user->status = $request->status;
+        $user->save();
+  
+        return response()->json(['success'=>'User status change successfully.']);
+    }
+
+    public function trashed()
+    {
+        $users = User::onlyTrashed()->paginate();
+        $title = 'Trashed Users';
+        return view('admin.users.trashed', compact('title', 'users'));
+    }
+
+    public function restore($id)
+    {
+        User::withTrashed()
+            ->where('id', $id)
+            ->restore();
+
+        return redirect(route('admin.users.trashed'));
+    }
+
+    public function userDestroy($id)
+    {
+        $user = User::withTrashed()
+                ->findOrFail($id);
+        $user->forceDelete();
+        return redirect()->route('admin.users.index');
+    }
+    
+    public function force($id)
+    {
+        User::trash($id)->forceDelete();
+        return redirect()->route('admin.users.index');
+    }
+
 }

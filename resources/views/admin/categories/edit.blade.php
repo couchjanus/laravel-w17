@@ -20,6 +20,19 @@
                 <p class="helper-block"></p>
             </div>
 
+            <div class="form-group">
+                <label for="status">Status</label>
+                <select class="form-control select2" id="status" name="active">
+                    @foreach(['yes', 'no'] as $value)
+                        <option value="{{ $value }}"
+                            @if ($value == $category->active)
+                                selected="selected"
+                            @endif
+                        >{{$value}}</option>
+                    @endforeach
+                </select>
+            </div>
+
             
 
             <div class="form-group">

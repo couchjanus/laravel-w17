@@ -36,13 +36,26 @@ Route::namespace('Admin')
         Route::post('categories/restore/{id}', 'CategoryController@restore')->name('categories.restore');
         Route::delete('categories/force/{id}', 'CategoryController@force')->name('categories.force');
         Route::resource('categories', 'CategoryController');
-    	Route::resource('users', 'UserController');
+  
+        Route::get('users/trashed', 'UserController@trashed')->name('users.trashed');
+        Route::post('users/restore/{id}', 'UserController@restore')->name('users.restore');
+        Route::delete('users/force/{id}', 'UserController@force')->name('users.force');
+  
+        Route::resource('users', 'UserController');
+        Route::resource('tags', 'TagController');
+        Route::resource('posts', 'PostController');
 });
 
 // Еще какие-то маршруты....
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+
+
+// Socialite Register Routes
+
+Route::get('social/{provider}', 'Auth\SocialController@redirect')->name('social.redirect');
+Route::get('social/{provider}/callback', 'Auth\SocialController@callback')->name('social.callback');
 
 Route::fallback(function() {
     return "Oops… How you've trapped here?";

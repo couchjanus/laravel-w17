@@ -14,16 +14,31 @@
     <h1 class="mt-4">{{ $post->title }}</h1>
 
     <!-- Author -->
-    <p class="lead">
+    <div class="d-flex justify-content-between">
+        <span class="lead">
         by
-        <a href="#">{{ $post->user_id }}</a>
-    </p>
-
+            <a href="#">{{ $post->user->name }}</a>
+        
+        </span>
+        <span class="lead">
+        Votes
+            {{ $post->votes }}
+        </span>
+    </div>
+    
     <hr>
 
     <!-- Date/Time -->
-    <p>Posted on {{ $post->updated_at }}</p>
-
+    <div class="d-flex justify-content-between">
+        <span class="lead">
+        Posted on {{ $post->updated_at->format('d/m/Y') }}
+        </span>
+        <span class="lead">
+        In category
+            <a href="#">{{ $post->category->name }}</a>
+        </span>
+    </div>
+     
     <hr>
 
     <!-- Preview Image -->

@@ -40,7 +40,7 @@
                                 {{ $category->id }}
                             </td>
                             <td>
-                                {{ $category->name ?? '' }}
+                                {{ $category->name ?? '' }} <strong>({{ $category->posts_count }} posts)</strong>
                             </td>
                             
                             <td>
@@ -56,6 +56,7 @@
                     @endforeach
                 </tbody>
             </table>
+            {{ $categories->links() }}
         </div>
     </div>
 </div>

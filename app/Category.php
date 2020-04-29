@@ -12,7 +12,7 @@ class Category extends Model
     use Sluggable;
 
     protected $fillable = [
-        'name', 'description'
+        'name', 'description', 'active'
     ];
 
     // Атрибуты, для которых запрещено массовое назначение.
@@ -30,8 +30,10 @@ class Category extends Model
             ]
         ];
     }
+
     public function posts()
     {
         return $this->hasMany(Post::class);
     }
+
 }

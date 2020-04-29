@@ -4,9 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Profile;
 use Illuminate\Http\Request;
+use App\Http\Services\ProfileService;
 
 class ProfileController extends Controller
 {
+    /**
+     * @var ProfileService
+     */
+    private $service;
+
+    public function __construct(ProfileService $service)
+    {
+        $this->service = $service;
+    }
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +24,7 @@ class ProfileController extends Controller
      */
     public function index()
     {
-        //
+        return view('profile.index');
     }
 
     /**
@@ -24,7 +34,7 @@ class ProfileController extends Controller
      */
     public function create()
     {
-        //
+        return view('profile.home');
     }
 
     /**
@@ -35,7 +45,9 @@ class ProfileController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->service->updateInformation($request->all());
+        return redirect()->route('profile.home')->withSuccess("Your Profile Updated Successguly");
+
     }
 
     /**
@@ -69,7 +81,7 @@ class ProfileController extends Controller
      */
     public function update(Request $request, Profile $profile)
     {
-        //
+        // $request->user() returns an instance of the authenticated user...
     }
 
     /**
@@ -82,4 +94,6 @@ class ProfileController extends Controller
     {
         //
     }
+
+
 }
