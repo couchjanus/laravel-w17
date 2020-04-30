@@ -62,7 +62,8 @@ class TagController extends Controller
      */
     public function edit(Tag $tag)
     {
-        //
+        $title = "Edit Tag";
+        return view('admin.tags.edit', compact('title', 'tag'));
     }
 
     /**
@@ -74,7 +75,9 @@ class TagController extends Controller
      */
     public function update(Request $request, Tag $tag)
     {
-        //
+        $tag->update($request->all());
+        return redirect()->route('admin.tags.index')->withSuccess('Tag Updated Successfully');
+
     }
 
     /**
@@ -85,6 +88,7 @@ class TagController extends Controller
      */
     public function destroy(Tag $tag)
     {
-        //
+        $tag->delete();
+        return redirect()->route('admin.tags.index')->withSuccess('Tag Deleted Successfully');;
     }
 }

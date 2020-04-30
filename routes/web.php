@@ -49,8 +49,23 @@ Route::namespace('Admin')
 // Еще какие-то маршруты....
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
+// Route::get('/home', 'HomeController@index')->name('home');
 
+Route::get('/home', function () {
+    return redirect('profile');
+});
+
+Route::middleware('auth')
+    ->prefix('profile')
+    ->as('profile.')
+	->group(function () {
+        Route::get('', 'ProfileController@index')
+            ->name('home');
+        Route::get('info', 'ProfileController@info')
+            ->name('info');
+        Route::put('store', 'ProfileController@store')
+            ->name('store');
+});
 
 // Socialite Register Routes
 

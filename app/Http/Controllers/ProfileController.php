@@ -27,15 +27,12 @@ class ProfileController extends Controller
         return view('profile.index');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+
+    public function info()
     {
         return view('profile.home');
     }
+    
 
     /**
      * Store a newly created resource in storage.

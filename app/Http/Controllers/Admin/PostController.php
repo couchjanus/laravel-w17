@@ -54,7 +54,7 @@ class PostController extends Controller
         ]);
 
         $post->tags()->sync((array)$request->input('tags'));  
-        return redirect()->route('admin.posts.index');
+        return redirect()->route('admin.posts.index')->withSuccess('Post Created Successfully');
     }
 
     /**
@@ -92,8 +92,8 @@ class PostController extends Controller
     public function update(Request $request, Post $post)
     {
         $post->update(['title' => $request->title, 'content'=>$request->content, 'status'=>$request->status, 'category_id'=>$request->category_id, 'user_id'=>Auth::id() ?? 1]);
-        $post->tags()->sync((array)$request->input('tag'));
-        return redirect()->route('admin.posts.index');
+        $post->tags()->sync((array)$request->input('tags'));
+        return redirect()->route('admin.posts.index')->withSuccess('Post Updated Successfully');
     }
 
     /**
