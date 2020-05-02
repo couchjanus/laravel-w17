@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Category;
+use Illuminate\Support\Facades\Validator;
 
 class CategoryController extends Controller
 {
@@ -39,6 +40,24 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|unique|max:191|min:3',
+            'description' => 'nullable|string',
+        ]);
+        
+        // Переданные данные не прошли проверку
+        if ($validator->fails()) {
+            return redirect('admin/categories/create')
+                    ->withErrors($validator)
+                    ->withInput();
+        }
+
+        $validator->after(function ($validator) {
+            if ($this->somethingElseIsInvalid()) {
+                $validator->errors()->add('name', 'Something is wrong with this field!');
+            }
+        });
+ 
         Category::create($request->all());
         return redirect(route('admin.categories.index'))->withSuccess('Category Created Successfully');;
     }
@@ -74,6 +93,11 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category)
     {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|unique:categories|max:191|min:3',
+            'description' => 'nullable|string',
+        ])->validate();
+        
         $category->update($request->all());
         return redirect()->route('admin.categories.index')->withSuccess('Category Updated Successfully');
     }

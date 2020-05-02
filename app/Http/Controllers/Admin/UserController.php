@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\{User, Profile};
 use Illuminate\Support\Facades\Hash;
 use App\Enums\UserStatus;
+use App\Http\Requests\{StoreUserRequest, UpdateUserRequest};
 
 class UserController extends Controller
 {
@@ -40,7 +41,7 @@ class UserController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreUserRequest $request)
     {
         $user = User::create([
             'name' => $request['name'],
@@ -87,7 +88,7 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateUserRequest $request, $id)
     {
         $user->update($request->all());
         

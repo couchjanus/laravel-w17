@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Profile;
 use Illuminate\Http\Request;
 use App\Http\Services\ProfileService;
+use App\Http\Requests\ProfileRequest;
 
 class ProfileController extends Controller
 {
@@ -40,7 +41,7 @@ class ProfileController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(ProfileRequest $request)
     {
         $this->service->updateInformation($request->all());
         return redirect()->route('profile.home')->withSuccess("Your Profile Updated Successguly");

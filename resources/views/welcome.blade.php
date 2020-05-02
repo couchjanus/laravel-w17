@@ -45,7 +45,7 @@
             }
 
             .title {
-                font-size: 84px;
+                font-size: 18px;
             }
 
             .links > a {
@@ -84,17 +84,13 @@
                     <x-alert />
                 </div>
 
-                <x-danger>
-                    <strong>Whoops!</strong> Something went wrong!
-                </x-danger>
+                <form action = "{{ route('reminder') }}" method="POST">
+                    @csrf
+                    <input type="email" name="email" placeholder="Email address">
+                    <input type="text" name="event" placeholder="Event Title">
+                    <button type="submit">Send Me A Mail</button>
+                </form>
 
-                <x-title>
-                    <x-slot name="title">
-                        Server Error
-                    </x-slot>
-
-                    <strong>Whoops!</strong> Something went wrong!
-                </x-title>
 
 
                 <div class="links">

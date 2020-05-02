@@ -39,8 +39,12 @@ class TagController extends Controller
      */
     public function store(Request $request)
     {
+        $this->validate($request, [
+            'name' => 'required|unique:tags|max:191|min:3',
+        ]);
+ 
         Tag::create($request->all());
-        return redirect(route('admin.tags.index'));
+        return redirect(route('admin.tags.index'))->with('success', 'Tag Created Successfully!');
     }
 
     /**
@@ -75,6 +79,9 @@ class TagController extends Controller
      */
     public function update(Request $request, Tag $tag)
     {
+        $this->validate($request, [
+            'name' => 'required|unique:tags|max:191',
+        ]);
         $tag->update($request->all());
         return redirect()->route('admin.tags.index')->withSuccess('Tag Updated Successfully');
 
