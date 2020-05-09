@@ -19,7 +19,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'status', 'email_verified_at'
+        'name', 'email', 'password', 'status', 'is_admin', 'email_verified_at'
     ];
 
     /**
@@ -64,5 +64,10 @@ class User extends Authenticatable
     public function social()
     {
         return $this->hasMany(Social::class);
+    }
+
+    public function isAdmin()
+    {
+        return $this->is_admin;
     }
 }

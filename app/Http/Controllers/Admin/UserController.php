@@ -11,6 +11,10 @@ use App\Http\Requests\{StoreUserRequest, UpdateUserRequest};
 
 class UserController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:admin');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -18,6 +22,8 @@ class UserController extends Controller
      */
     public function index()
     {
+        // dd(\Gate::allows('can-show-user'));
+        // abort_unless(\Gate::allows('can-show-user'), 403);
         $users = User::orderBy('id', 'desc')->paginate(10);
         $title = "Users Management";
         return view('admin.users.index', compact('users', 'title'));
@@ -30,6 +36,7 @@ class UserController extends Controller
      */
     public function create()
     {
+        // abort_unless(\Gate::allows('can-create-user'), 403);
         $title = 'Add User';
         $status = UserStatus::toSelectArray();
         return view('admin.users.create', compact('title', 'status'));
@@ -43,6 +50,8 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request)
     {
+        // abort_unless(\Gate::allows('can-create-user'), 403);
+
         $user = User::create([
             'name' => $request['name'],
             'email' => $request['email'],
@@ -62,8 +71,9 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(User $user)
     {
+        abort_unless(\Gate::allows('can-show-user'), 403);
         return view('admin.users.show')->withUser($user)->withTitle('Show User');
 
     }
@@ -74,8 +84,9 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(User $user)
     {
+        abort_unless(\Gate::allows('can-edit-user'), 403);
         $status = UserStatus::toSelectArray();
         return view('admin.users.edit')->withUser($user)->withTitle('Edit User')->withStatus($status);
    
@@ -88,9 +99,16 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateUserRequest $request, $id)
+    public function update(UpdateUserRequest $request, User $user)
     {
-        $user->update($request->all());
+        abort_unless(\Gate::allows('can-edit-user'), 403);
+
+        $user->update([
+            'name'=>$request->name,
+            'email'=>$request->email,
+            'status'=>$request->status,
+            'is_admin'=>($request->is_admin=='on')?1:0,
+            ]);
         
         if (!$user->profile) {
             $profile = new Profile();
@@ -106,8 +124,9 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(User $user)
     {
+        abort_unless(\Gate::allows('can-delete-user'), 403);
         $user->delete();
         return redirect()->route('admin.users.index');
     }

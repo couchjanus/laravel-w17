@@ -27,6 +27,7 @@ Route::group(['prefix' => 'blog'], function () {
     Route::put('/{id}/edit', 'BlogController@update')->name('update');
 });
 
+// Route::middleware('auth', 'admin')->namespace('Admin')
 Route::namespace('Admin')
     ->prefix('admin')
     ->as('admin.')
@@ -45,15 +46,41 @@ Route::namespace('Admin')
         Route::resource('tags', 'TagController');
         Route::resource('posts', 'PostController');
 
+        Route::get('admins/trashed', 'AdminController@trashed')->name('admins.trashed');
+        Route::post('admins/restore/{id}', 'AdminController@restore')->name('admins.restore');
+        Route::delete('admins/force/{id}', 'AdminController@force')->name('admins.force');
+        Route::resource('admins', 'AdminController');
+        
         Route::get('invitations', 'InvitationsController@index')->name('showInvitations');
         Route::post('invite/{id}', 'InvitationsController@sendInvite')
         ->name('send.invite');
+
+        Route::resource('permissions', 'PermissionController');
+        Route::resource('roles', 'RoleController');
+        
+         /**
+         * Admin Auth Route(s)
+         */
+        Route::namespace('Auth')->group(function(){
+            //Login Routes
+            Route::get('/login','LoginController@showLoginForm')->name('login');
+            Route::post('/login','LoginController@login');
+            Route::post('/logout','LoginController@logout')->name('logout');
+
+            //Forgot Password Routes
+            Route::get('/password/reset','ForgotPasswordController@showLinkRequestForm')->name('password.request');
+            Route::post('/password/email','ForgotPasswordController@sendResetLinkEmail')->name('password.email');
+
+            //Reset Password Routes
+            Route::get('/password/reset/{token}','ResetPasswordController@showResetForm')->name('password.reset');
+            Route::post('/password/reset','ResetPasswordController@reset')->name('password.update');
+
+        });
 });
 
 // Еще какие-то маршруты....
 Auth::routes();
 // Auth::routes(['verify' => true]);
-
 
 Route::get('/home', function () {
     return redirect('profile');
@@ -76,42 +103,8 @@ Route::middleware('auth')
 Route::get('social/{provider}', 'Auth\SocialController@redirect')->name('social.redirect');
 Route::get('social/{provider}/callback', 'Auth\SocialController@callback')->name('social.callback');
 
-// 
-
-
-Route::get('reminder', function () {
-    return new \App\Mail\Reminder();
-})->name('reminder');
-
-// Route::get('reminder', function () {
-//     return new App\Mail\Reminder('Blaha Muha Coming Soon');
-// });
-
-// Route::post('reminder', function (\Illuminate\Http\Request $request) {
-//     dd($request);
-// })->name('reminder');
-
-// Route::post('reminder', function (
-//     \Illuminate\Http\Request $request, 
-//     \Illuminate\Mail\Mailer $mailer) {
-//     $mailer->to($request->email)
-//     ->send(new \App\Mail\Reminder($request->event));
-//            return redirect()->back();    
-// })->name('reminder');
-
-// Route::get('invite', function () {
-//     return (new App\Mail\InvitationMail())->render();
-// });
- 
-// Route::get('invite', function () {
-//     $url = 'Your Invite Link';
-//     return (new App\Mail\InvitationMail($url))->render();
-//  });
- 
-
 Route::get('register/request', 'Auth\RegisterController@requestInvitation')->name('requestInvitation');
 Route::post('invitations', 'InvitationController@store')->middleware('guest')->name('storeInvitation');
-     
 
 Route::fallback(function() {
     return "Oops… How you've trapped here?";

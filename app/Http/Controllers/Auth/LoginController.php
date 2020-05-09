@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\Request;
 
 class LoginController extends Controller
 {
@@ -38,10 +39,27 @@ class LoginController extends Controller
     {
         $this->middleware('guest')->except('logout');
     }
-    protected function authenticated(Request $request, $user) {
-        if (Hash::needsRehash($user->password)) {
-            $user->password = Hash::make($request->password);
-            $user->save();
+    // protected function authenticated(Request $request, $user) {
+    //     if (Hash::needsRehash($user->password)) {
+    //         $user->password = Hash::make($request->password);
+    //         $user->save();
+    //     }
+    // }
+
+    protected function redirectTo() {
+        if (auth()->user()->isAdmin()) {  
+            return '/admin';  
         }
+        return '/home';
     }
+
+    public function showLoginForm()
+    {
+        return view('auth.login',[
+            'title' => 'Login',
+            'loginRoute' => 'login',
+            'forgotPasswordRoute' => 'password.request',
+        ]);
+    }
+
 }
