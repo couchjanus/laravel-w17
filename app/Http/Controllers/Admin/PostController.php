@@ -8,6 +8,9 @@ use App\Enums\PostStatusType;
 use Illuminate\Http\Request;
 use Auth;
 use Gate;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
+use Image;
 
 class PostController extends Controller
 {
@@ -83,39 +86,37 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
+        
         $post = Post::firstOrCreate([
             'title' => $request->title,
             'content' => $request->content,
             'status' => $request->status,
-            'category_id' => $request->category_id,
-            'user_id' => Auth::id() ?? 1
+            'cover_path' => $this->uploadCover($request->file("cover")),
+            // 'cover_path' => $this->uploadImage($request->file("cover")),
+            'user_id' => Auth::guard('admin')->id(),
         ]);
 
         $post->tags()->sync((array)$request->input('tags'));  
+        $post->categories()->sync((array)$request->input('categories'));  
         return redirect()->route('admin.posts.index')->withSuccess('Post Created Successfully');
     }
 
-    // public function store(Request $request)
-    // {
+    private function uploadCover(UploadedFile $file) : string
+    {
+        $filename = time() . "." . $file->getClientOriginalExtension();
+        $file->storeAs("public/covers", $filename);
+        return asset("storage/covers/". $filename);
+    }
 
-    //     // $this->validate($request, [
-    //     //     'title' => 'required',
-    //     //     'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-    //     // ]);
-
-    //     $post = Post::firstOrCreate([
-    //         'title' => $request->title,
-    //         'content' => $request->content,
-    //         'status' => $request->status,
-    //         'user_id' => Auth::guard('admin')->id(),
-    //         'cover_path' => $this->uploadImage($request->file("cover")),
-    //         'visits' => 0
-    //     ]);
-
-    //     $post->categories()->sync((array)$request->input('categories'));  
-    //     $post->tags()->sync((array)$request->input('tags'));  
-    //     return redirect()->route('admin.posts.index');
-    // }
+    public function uploadImage(UploadedFile $file) : string
+    {
+        $filename = time() . "." . $file->getClientOriginalExtension();
+        $img = Image::make($file);
+        $img->resize(520, 250, function ($constraint) {
+            $constraint->aspectRatio();
+        })->save(storage_path('app/public/covers')."/".$filename);
+        return asset("storage/covers/". $filename);
+    }
 
     /**
      * Display the specified resource.
@@ -125,12 +126,6 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-        // if ($user->can('view', $post)) {
-        //   echo "Current logged in user is allowed to update the Post: {$post->title}";
-        // } else {
-        //   echo 'Not Authorized.';
-        // }
-
     }
 
     /**
@@ -141,33 +136,16 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
-        $categories = Category::pluck('name', 'id'); 
-        $status = PostStatusType::toSelectArray();
-        $tags = Tag::get()->pluck('name', 'id');
-        return view('admin.posts.edit')->withPost($post)->withStatus($status)->withCategories($categories)->withTags($tags)->withTitle('Posts management');
+        $user = Auth::guard('admin')->user();
+        if (Gate::forUser($user)->allows('update-post', $post)) {
+            $categories = Category::get()->pluck('name', 'id'); 
+            $status = PostStatusType::toSelectArray();
+            $tags = Tag::get()->pluck('name', 'id');
+            return view('admin.posts.edit')->withPost($post)->withStatus($status)->withCategories($categories)->withTags($tags)->withTitle('Posts management');
+        } else {   
+            return redirect(route('admin.posts.index'))->with('warning','Not Allowed Edit Post');
+        }
     }
-
-    // public function edit(Post $post)
-    // {
-    //     $user = Auth::guard('admin')->user();
-
-    //     // if (Gate::forUser($user)->allows('update-post', $post)) {
-    //     //     echo 'Allowed Edit Post';
-    //     // } else {
-    //     //         echo 'Not Allowed Edit Post ';
-    //     // }
-    //     // exit;
-
-    //     if (Gate::forUser($user)->allows('update-post', $post)) {
-    //         $categories = Category::pluck('name', 'id'); 
-    //         $status = PostEnumStatusType::toSelectArray();
-    //         $tags = Tag::get()->pluck('name', 'id');
-    //         return view('admin.posts.edit')->withPost($post)->withStatus($status)->withCategories($categories)->withTags($tags)->withTitle('Posts management');
-    //     } else {   
-    //         return redirect(route('admin.posts.index'))->with('warning','Not Allowed Edit Post');
-    //     }
-        
-    // }
 
     /**
      * Update the specified resource in storage.
@@ -178,39 +156,20 @@ class PostController extends Controller
      */
     public function update(Request $request, Post $post)
     {
-        $post->update(['title' => $request->title, 'content'=>$request->content, 'status'=>$request->status, 'category_id'=>$request->category_id, 'user_id'=>Auth::id() ?? 1]);
+        $data = ['title' => $request->title, 'content'=>$request->content, 'status'=>$request->status, 'user_id'=> Auth::guard('admin')->id()];
+
+        if($request->file("cover")) {
+            Storage::delete("public/covers/" . $post->cover);
+            $data += ["cover_path" => $this->uploadImage($request->file("cover"))]; 
+        } else {
+            $data += ["cover_path" => $post->cover_path]; 
+        }
+
+        $post->update($data);
         $post->tags()->sync((array)$request->input('tags'));
-        return redirect()->route('admin.posts.index')->withSuccess('Post Updated Successfully');
+        $post->categories()->sync((array)$request->categories); 
+        return redirect(route('admin.posts.index'))->with('message','Post has been updated successfully');
     }
-
-    // public function update(Request $request, Post $post)
-    // {
-        
-    //     $data = ['title' => $request->title, 'content'=>$request->content, 'status'=>$request->status, 'user_id'=>Auth::id() ?? 1];
-
-    //     if($request->file("cover")) {
-    //         Storage::delete("public/covers/" . $post->cover);
-    //         $data += ["cover_path" => $this->uploadCover($request->file("cover"))]; 
-    //     } else {
-    //         $data += ["cover_path" => $post->cover_path]; 
-    //     }
-
-    //     $post->update($data);
-
-    //     $post->tags()->sync((array)$request->input('tags'));
-    //     $post->categories()->sync((array)$request->input('categories')); 
-
-    //     return redirect()->route('admin.posts.index');
-
-    //     // $user = Auth::guard('admin')->user();
-    //     // if ($user->can('update', $post)) {
-    //     // $post->update($request->all());
-    //     // $post->tags()->sync((array)$request->input('tags'));
-    //     // return redirect(route('admin.posts.index'))->with('message','Post has been updated successfully');
-    //     // } else {
-    //     //     return redirect(route('admin.posts.index'))->with('warning',"Current logged in user is not allowed to update the Post: {$post->id}");
-    //     // }
-    // }
 
     /**
      * Remove the specified resource from storage.
@@ -221,35 +180,9 @@ class PostController extends Controller
     public function destroy(Post $post)
     {
         $post->tags()->detach();
+        Storage::delete("public/covers/{$post->cover}");
         $post->delete();
-        return redirect()->route('admin.posts.index');
+        return redirect()->route('admin.posts.index')->with('success','Post deleted successfully');
     }
-
-    // public function destroy(Post $post)
-    // {
-    //     $post->tags()->detach();
-    //     Storage::delete("public/covers/{$post->cover}");
-    //     $post->delete();
-    //     return redirect()->route('admin.posts.index');
-
-    //     // $user = Auth::guard('admin')->user();
-        
-    //     // if ($user->can('delete', $post)) {
-    //     //     $post->tags()->detach();
-    //     //     $post->delete();
-    //     //     return redirect()->route('admin.posts.index')->with('success','Post deleted successfully');
-    //     // } else {
-    //     //     return redirect()->route('admin.posts.index')->with('warning','Пользователь '.$user->name.' не может удалять статью...');
-    //     // }
-        
-    //     // if (Gate::forUser($user)->denies('destroy-post', $post)) {
-    //     //     // Пользователь не может удалять статью...
-    //     //     // dd('Пользователь '.$user->name.' не может удалять статью...');
-    //     //     return redirect()->route('posts.index')->with('warning','Пользователь '.$user->name.' не может удалять статью...');
-    //     // } else {
-    //     // $post->tags()->detach();
-    //     // $post->delete();
-    //     // return redirect()->route('posts.index')->with('type','success')->with('message','Post deleted successfully');
-    //     // }
-    // }
+    
 }

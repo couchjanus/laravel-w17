@@ -18,6 +18,27 @@
             </div>
 
             <div class="form-group">
+
+            <div class="mx-auto" style="width: 30%;"><img src="{{ $post->cover_path }}"></div>
+
+              <div class="mx-auto uploader">
+                <input id="file-upload" type="file" name="cover" accept="image/*" onchange="readURL(this);">
+                <label for="file-upload" id="file-drag">
+                    <img id="file-image" src="#" alt="Preview" class="hidden">
+                    <div id="start">
+                        <i class="fas fa-download" aria-hidden="true"></i>
+                        <div>Change This Image</div>
+                        <div id="notimage" class="hidden">Please select an image</div>
+                        <span id="file-upload-btn" class="btn btn-primary">Select a file</span>
+                        <br>
+                        <span class="text-danger">{{ $errors->first('cover') }}</span>
+                    </div>
+                </label>
+              </div>
+            </div>
+            <br><hr>
+
+            <div class="form-group">
                 <label for="content">Content</label>
                 <textarea name="content" class="form-control" rows="10">{{ $post->content }}</textarea>
             </div>
@@ -37,14 +58,12 @@
             </div>
 
             <div class="form-group">
-                <label for="category_id">Select Category</label>
-                <select name="category_id" class="form-control select2">
+                <label>Select Category</label>
+                <select name="categories[]" class="form-control select2" multiple='multiple'>
                     @foreach ($categories as $key => $value)
                         <option value="{{ $key }}"
-                            @if ($key == $post->category_id)
-                                selected="selected"
-                            @endif
-                            >{{ $value }}</option>
+                        {{ ($post->categories->pluck('id')->contains($key)) ? 'selected':'' }}>
+                        {{ $value }}</option>
                     @endforeach
                 </select>
             </div>
@@ -54,7 +73,7 @@
                 <select name="tags[]" class="form-control select2" multiple='multiple' id='tag'>
                     @foreach($tags as $key => $value)
                         <option value="{{ $key }}"
-                            {{ ($post->tags->pluck('id')->contains($key)) ? 'selected':'' }}  />
+                            {{ ($post->tags->pluck('id')->contains($key)) ? 'selected':'' }}>
                             {{ $value }}
                         </option>
                     @endforeach
@@ -78,6 +97,21 @@
     $(document).ready(function () {
         $('.select2').select2();
     });
+    function readURL(input, id) {
+        id = id || '#file-image';
+        
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+    
+            reader.onload = function (e) {
+                $(id).attr('src', e.target.result);
+            };
+    
+            reader.readAsDataURL(input.files[0]);
+            $('#file-image').removeClass('hidden');
+            $('#start').hide();
+        }
+    }
 </script>
 
 @endpush

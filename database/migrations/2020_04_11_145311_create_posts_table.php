@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use App\Enums\PostStatusType;
 
 class CreatePostsTable extends Migration
 {
@@ -15,11 +16,14 @@ class CreatePostsTable extends Migration
     {
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
-            $table->string('title');   // VARCHAR equivalent with a length
-            $table->boolean('published')->default(true);   // BOOLEAN equivalent to the table
+            $table->string('title');
+            $table->string('slug')->unique();
             $table->unsignedBigInteger('votes')->default(0); 
-            $table->unsignedBigInteger('category_id'); 
-            $table->longText('content');  // LONGTEXT equivalent to the table
+            $table->unsignedBigInteger('user_id'); 
+            $table->unsignedTinyInteger('status')->default(PostStatusType::Draft);
+            $table->longText('content');
+            $table->string("cover_path")->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

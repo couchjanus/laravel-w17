@@ -4,15 +4,18 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Cviebrock\EloquentSluggable\Sluggable;
+
+use Kalnoy\Nestedset\NodeTrait;
+use Illuminate\Support\Str;
 
 class Category extends Model
 {
     use SoftDeletes;
-    use Sluggable;
+
+    use NodeTrait;
 
     protected $fillable = [
-        'name', 'description', 'active'
+        'name', 'slug', 'description', 'active', 'parent_id'
     ];
 
     // Атрибуты, для которых запрещено массовое назначение.
@@ -22,18 +25,59 @@ class Category extends Model
         'deleted_at',
     ];
 
-    public function sluggable()
+    /**
+     * @var array
+     */
+    protected $casts = [
+        'parent_id' =>  'integer',
+    ];
+
+    /**
+     * @param $value
+     */
+    public function setNameAttribute($value)
     {
-        return [
-            'slug' => [
-                'source' => 'name'
-            ]
-        ];
+        $this->attributes['name'] = $value;
+        $this->attributes['slug'] = Str::slug($value);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function children()
+    {
+        return $this->hasMany(Category::class, 'parent_id');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function parent()
+    {
+        return $this->belongsTo(Category::class, 'parent_id');
     }
 
     public function posts()
     {
-        return $this->hasMany(Post::class);
+        return $this->belongsToMany(Post::class);
+    }
+
+    /**
+     * Scope a query to only include posts of a given type.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder $query
+     * @param  mixed $type
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+
+    public static function scopeTrash($query, $id)
+    {
+        return $query->withTrashed()->where('id', $id)->first();       
+    }
+
+    static function scopeActive($query, $active)
+    {
+        return $query->where('active', $active);
     }
 
 }

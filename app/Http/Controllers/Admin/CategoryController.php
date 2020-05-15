@@ -16,7 +16,7 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::withCount(['posts'])->paginate(10);
+        $categories = Category::paginate(10);
         $title = "Categories Management";
         return view('admin.categories.index',compact('categories', 'title'));
     }
@@ -29,7 +29,8 @@ class CategoryController extends Controller
     public function create()
     {
         $title = "Add Category";
-        return view('admin.categories.create',compact('title'));
+        $categories = Category::get()->toTree();
+        return view('admin.categories.create',compact('title', 'categories'));
     }
 
     /**
@@ -40,23 +41,23 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|unique|max:191|min:3',
-            'description' => 'nullable|string',
-        ]);
+        // $validator = Validator::make($request->all(), [
+        //     'name' => 'required|unique|max:191|min:3',
+        //     'description' => 'nullable|string',
+        // ]);
         
-        // Переданные данные не прошли проверку
-        if ($validator->fails()) {
-            return redirect('admin/categories/create')
-                    ->withErrors($validator)
-                    ->withInput();
-        }
+        // // Переданные данные не прошли проверку
+        // if ($validator->fails()) {
+        //     return redirect('admin/categories/create')
+        //             ->withErrors($validator)
+        //             ->withInput();
+        // }
 
-        $validator->after(function ($validator) {
-            if ($this->somethingElseIsInvalid()) {
-                $validator->errors()->add('name', 'Something is wrong with this field!');
-            }
-        });
+        // $validator->after(function ($validator) {
+        //     if ($this->somethingElseIsInvalid()) {
+        //         $validator->errors()->add('name', 'Something is wrong with this field!');
+        //     }
+        // });
  
         Category::create($request->all());
         return redirect(route('admin.categories.index'))->withSuccess('Category Created Successfully');;
@@ -81,7 +82,8 @@ class CategoryController extends Controller
      */
     public function edit(Category $category)
     {
-        return view('admin.categories.edit')->withCategory($category)->withTitle('Edit Category');
+        $categories = Category::get()->toTree();
+        return view('admin.categories.edit')->withCategory($category)->withTitle('Edit Category')->withCategories($categories);
     }
 
     /**

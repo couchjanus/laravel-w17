@@ -5,6 +5,7 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Cviebrock\EloquentSluggable\Sluggable;
+use \DateTimeInterface;
 
 class Post extends Model
 {
@@ -13,10 +14,12 @@ class Post extends Model
 
 
     protected $fillable = [
-        'title', 'content', 'category_id', 'published'
+        'title', 'content', 'user_id', 'status', 'cover_path'
     ];
 
     protected $dates = [
+        'created_at',
+        'updated_at',
         'deleted_at',
     ];
 
@@ -29,6 +32,10 @@ class Post extends Model
         ];
     }
     
+    protected function serializeDate(DateTimeInterface $date)
+    {
+        return $date->format('Y-m-d H:i:s');
+    }
 
    // How to avoid error in {{ $post->user->name }} if user is deleted?
 
@@ -46,17 +53,31 @@ class Post extends Model
     //    return $this->belongsTo(User::class);
     // }
 
-    public function category()
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function categories()
     {
-       return $this->belongsTo(Category::class);
+        return $this->belongsToMany(Category::class, 'category_post');
     }
 
     public function tags()
     {
-       return $this->belongsToMany(Tag::class,  'post_tag');
+       return $this->belongsToMany(Tag::class, 'post_tag');
     }
 
-//     You can use RAW DB queries in various places, including havingRaw() function after groupBy() .
+    public function getDescriptionAttribute()
+    {
+        return substr($this->content, 0, 70) . "...";
+    }
+    public function getStitleAttribute()
+    {
+        return substr($this->title, 0, 30);
+    }
+    public function getCoverAttribute()
+    {
+        $parts = explode("/", $this->cover_path);
 
-// Product::groupBy('category_id')->havingRaw('COUNT(*) > 1')->get();
+        return end($parts);
+    }
 }

@@ -1,41 +1,26 @@
-@extends('layouts.master')
+@extends('layouts.app')
 
 @section('title')
   @parent
 	 | Blog page
 @endsection
 
-@section('styles')
-    <!-- Custom styles for this template -->
-    @include('layouts.partials.shared._styles')
-@endsection
-
-@section('meta')
-@endsection
-  <!-- Navigation -->
-@include('layouts.partials.blog._nav')
-@section('page')
+@section('content')
     <!-- Page Content -->
-    <div class="container">
-
-        <div class="row">
-
+    <div class="container-fluid py-5">
+        <div class="container">
+            <div class="row">
             <!-- Blog Entries Column -->
-            @yield('content')
+            @yield('blogcontent')
 
             <!-- Sidebar Widgets Column -->
             @include('layouts.partials.blog._sidebar')
+            </div>
         </div>
         <!-- /.row -->
 
     </div>
-    <!-- /.container -->
-    <!-- Footer -->
-    @include('layouts.partials.blog._footer')
-
 @endsection
-
-@include('layouts.partials.shared._scripts')
 
 @push('scripts')
 @endpush

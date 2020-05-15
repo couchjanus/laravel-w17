@@ -5,10 +5,10 @@
 | Simple Blog Page
 @endsection
 
-@section('content')
+@section('blogcontent')
 
 <!-- Post Content Column -->
-<div class="col-lg-8">
+<div class="col-lg-8 col-md-8 col-sm-12">
 
     <!-- Title -->
     <h1 class="mt-4">{{ $post->title }}</h1>
@@ -35,14 +35,14 @@
         </span>
         <span class="lead">
         In category
-            <a href="#">{{ $post->category->name }}</a>
+            <a href="#"></a>
         </span>
     </div>
      
     <hr>
 
     <!-- Preview Image -->
-    <img class="img-fluid rounded" src="http://placehold.it/900x300" alt="">
+    <img class="img-fluid rounded" src="{{$post->cover_path ?? asset('storage/covers/cover.png')}}" alt="{{ $post->title }}">
 
     <hr>
 

@@ -27,6 +27,10 @@ Route::group(['prefix' => 'blog'], function () {
     Route::put('/{id}/edit', 'BlogController@update')->name('update');
 });
 
+// category.show
+
+Route::get('/category/{slug}', 'CategoryController@show')->name('category.show');
+
 // Route::middleware('auth', 'admin')->namespace('Admin')
 Route::namespace('Admin')
     ->prefix('admin')

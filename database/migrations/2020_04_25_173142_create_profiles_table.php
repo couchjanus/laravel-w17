@@ -22,6 +22,8 @@ class CreateProfilesTable extends Migration
             $table->string('phone')->nullable();
             $table->string('location')->nullable();
             $table->text('bio')->nullable();
+            $table->string('avatar')->nullable();
+            $table->string('username')->nullable();
             $table->timestamps();
         });
     }

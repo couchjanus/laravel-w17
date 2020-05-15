@@ -1,5 +1,5 @@
 <!-- Sidebar Widgets Column -->
-<div class="col-md-4">
+<div class="col-lg-4 col-md-4 col-sm-12">
 
     <!-- Search Widget -->
     <div class="card my-4">
@@ -21,28 +21,48 @@
             <div class="row">
                 <div class="col-lg-6">
                     <ul class="list-unstyled mb-0">
-                        <li>
-                            <a href="#">Web Design</a>
-                        </li>
-                        <li>
-                            <a href="#">HTML</a>
-                        </li>
-                        <li>
-                            <a href="#">Freebies</a>
-                        </li>
+                    @foreach($categories as $category)
+                        @if ($category->id % 2 == 0)
+                            @if ($category->children->count() > 0)
+                                <li class="widget-item">
+                                    <a class="widget-link" href="{{ route('category.show', $category->id) }}" id="{{ $category->id }}">{{ $category->name }}</a>
+                                    <ul class="list-unstyled mb-0">
+                                        @foreach($category->children as $cats)
+                                            <li><a class="dropdown-item widget-link" href="{{ route('category.show', $cats->id) }}">{{ $cats->name }}</a>
+                                            </li>    
+                                        @endforeach
+                                    </ul>
+                                </li>
+                            @else
+                                <li class="widget-item">
+                                    <a class="widget-link" href="{{ route('category.show', $category->slug) }}">{{ $category->name }}</a>
+                                </li>
+                            @endif
+                        @endif
+                    @endforeach
                     </ul>
                 </div>
                 <div class="col-lg-6">
                     <ul class="list-unstyled mb-0">
-                        <li>
-                            <a href="#">JavaScript</a>
-                        </li>
-                        <li>
-                            <a href="#">CSS</a>
-                        </li>
-                        <li>
-                            <a href="#">Tutorials</a>
-                        </li>
+                        @foreach($categories as $category)
+                        @if ($category->id % 2 != 0)
+                            @if ($category->children->count() > 0)
+                                <li class="widget-item">
+                                    <a class="widget-link" href="{{ route('category.show', $category->id) }}" id="{{ $category->id }}">{{ $category->name }}</a>
+                                    <ul class="list-unstyled mb-0">
+                                        @foreach($category->children as $cats)
+                                            <li><a class="dropdown-item widget-link" href="{{ route('category.show', $cats->id) }}">{{ $cats->name }}</a>
+                                            </li>    
+                                        @endforeach
+                                    </ul>
+                                </li>
+                            @else
+                                <li class="widget-item">
+                                    <a class="nav-link" href="{{ route('category.show', $category->id) }}">{{ $category->name }}</a>
+                                </li>
+                            @endif
+                        @endif
+                    @endforeach
                     </ul>
                 </div>
             </div>
@@ -57,5 +77,6 @@
             Bootstrap 4 card containers!
         </div>
     </div>
-
+    @widget('tags')
+    
 </div>
