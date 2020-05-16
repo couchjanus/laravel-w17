@@ -502,4 +502,24 @@
     .widget-item a.widget-link{
         color:#333399 !important;
     }
+
+
+    .comment-header .image{
+    min-width: 30px;
+    max-width: 30px;
+    height: 30px;
+    overflow: hidden;
+    margin-right: 20px;
+
+    }
+    .comment-header .image img{
+    max-width: 100%;
+    }
+
+    .search-link {
+        color:#3333aa !important;
+    }
+    .search-link:hover {
+        color:#aa3333 !important;
+    }
     </style>

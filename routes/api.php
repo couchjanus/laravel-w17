@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Http\Request;
+use Illuminate\Http\{Request, Response};
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,4 +16,25 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
+});
+
+Route::namespace('Api')->group(function () {
+
+    Route::get(
+        'post/{id}/comments',
+        function ($id) {
+            return response()->json(['comments'=>\App\Post::find($id)->comments->all()], Response::HTTP_OK);
+        }
+    );
+
+    Route::post(
+        '/comment',
+        function (Request $request) {
+            $user = \App\User::find($request->user_id);
+            $post = \App\Post::find($request->post_id);
+            $post->comment($request->comment, $user);
+            return response()->json('ok');
+        }
+    );
+    
 });

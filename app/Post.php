@@ -6,8 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Cviebrock\EloquentSluggable\Sluggable;
 use \DateTimeInterface;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use App\Comment;
+use Spatie\Searchable\Searchable;
+use Spatie\Searchable\SearchResult;
 
-class Post extends Model
+
+class Post extends Model implements Searchable
 {
     use SoftDeletes;
     use Sluggable;
@@ -80,4 +85,26 @@ class Post extends Model
 
         return end($parts);
     }
+
+    public function comments(): MorphMany
+    {
+        return $this->morphMany(Comment::class, 'commentable')->with('creator');
+    }
+
+    public function comment($data, Model $creator): Comment
+    {
+        return (new Comment())->createComment($this, $data, $creator);
+    }
+
+    public function getSearchResult(): SearchResult
+    {
+        $url = route('blog.show', $this->slug);
+
+        return new SearchResult(
+            $this,
+            $this->title,
+            $url
+        );
+    }
+
 }

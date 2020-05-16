@@ -5,12 +5,14 @@
     <div class="card my-4">
         <h5 class="card-header">Search</h5>
         <div class="card-body">
+          <form action="{{ route('search.result') }}" method="get" class="form-inline mr-auto">@csrf
             <div class="input-group">
-                <input type="text" class="form-control" placeholder="Search for...">
+                <input type="text" name="query" class="form-control"  value="{{ isset($searchterm) ? $searchterm : ''  }}" placeholder="Search for..." aria-label="Search">
                 <span class="input-group-btn">
-                    <button class="btn btn-secondary" type="button">Go!</button>
+                    <button class="btn aqua-gradient btn-rounded btn-sm my-0 waves-effect waves-light" type="submit">Go!</button>
                 </span>
             </div>
+          </form>
         </div>
     </div>
 

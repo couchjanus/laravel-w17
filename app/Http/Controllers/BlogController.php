@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Post;;
+use App\{Post, Category};
 use App\Enums\PostStatusType;
+use Spatie\Searchable\Search;
 
 class BlogController extends Controller
 {
@@ -24,10 +25,6 @@ class BlogController extends Controller
         }
         $title = "Blog post item";
         $post = Post::whereSlug($slug)->with('user')->with('categories')->firstOrFail();
-        
-        // $post->increment('votes');
-        // \Session::flush();
-
         $Key = 'blog' . $post->id;
         if (!\Session::has($Key)) {
             $post->increment('votes');
@@ -35,6 +32,16 @@ class BlogController extends Controller
         }
         
         return view('blog.show',compact('post'));
+    }
+
+    public function search(Request $request)
+    {
+        $searchResults = (new Search())
+            ->registerModel(Post::class, 'title')
+            ->registerModel(Category::class, 'name')
+            ->perform($request->input('query'));
+
+        return view('blog.search', compact('searchResults'));
     }
 
 }

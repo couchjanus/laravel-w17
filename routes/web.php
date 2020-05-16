@@ -27,9 +27,12 @@ Route::group(['prefix' => 'blog'], function () {
     Route::put('/{id}/edit', 'BlogController@update')->name('update');
 });
 
+Route::get('search', 'SearchController@index')->name('search.index');
+Route::get('search-results', 'SearchController@search')->name('search.result');
+
 // category.show
 
-Route::get('/category/{slug}', 'CategoryController@show')->name('category.show');
+Route::get('/category/{id}', 'CategoryController@show')->name('category.show');
 
 // Route::middleware('auth', 'admin')->namespace('Admin')
 Route::namespace('Admin')

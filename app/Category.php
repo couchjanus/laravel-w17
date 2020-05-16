@@ -7,8 +7,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 use Kalnoy\Nestedset\NodeTrait;
 use Illuminate\Support\Str;
+use Spatie\Searchable\Searchable;
+use Spatie\Searchable\SearchResult;
 
-class Category extends Model
+class Category extends Model implements Searchable
 {
     use SoftDeletes;
 
@@ -78,6 +80,17 @@ class Category extends Model
     static function scopeActive($query, $active)
     {
         return $query->where('active', $active);
+    }
+
+    public function getSearchResult(): SearchResult
+    {
+        $url = route('category.show', $this->id);
+
+        return new SearchResult(
+            $this,
+            $this->name,
+            $url
+         );
     }
 
 }
